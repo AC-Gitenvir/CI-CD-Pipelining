@@ -4,8 +4,8 @@ pipeline {
     agent any
 
     environment {
-        // Replace 'your-dockerhub-username' with your actual Docker Hub username.
-        DOCKER_IMAGE = "your-dockerhub-username/flask-app:${env.BUILD_NUMBER}"
+        // The Docker Hub username is now correctly set to your Docker ID.
+        DOCKER_IMAGE = "ayush0077/flask-app:${env.BUILD_NUMBER}"
         // This MUST match the ID of your Docker Hub credentials in Jenkins.
         DOCKER_REGISTRY_CREDENTIALS = 'dockerhub-credentials'
     }
@@ -36,7 +36,6 @@ pipeline {
         }
 
         stage('Push Docker Image') {
-            // This stage will now run every time, without a conditional.
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: env.DOCKER_REGISTRY_CREDENTIALS, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
@@ -49,7 +48,6 @@ pipeline {
         }
 
         stage('Deploy (Manual Trigger)') {
-            // This stage will now run every time, without a conditional.
             steps {
                 input message: 'Proceed with deployment to your RHEL 9 machine?', ok: 'Deploy'
                 script {
