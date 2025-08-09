@@ -13,7 +13,6 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // This step tells Jenkins to clone your repository.
                 git branch: 'main', url: 'https://github.com/AC-Gitenvir/CI-CD-Pipelining.git'
             }
         }
@@ -37,16 +36,12 @@ pipeline {
         }
 
         stage('Push Docker Image') {
-            when {
-                branch 'main' // Only push if changes are on the main branch
-            }
+            // This stage will now run every time, without a conditional.
             steps {
                 script {
-                    // Login to Docker Hub using stored Jenkins credentials
                     withCredentials([usernamePassword(credentialsId: env.DOCKER_REGISTRY_CREDENTIALS, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh "echo \"$DOCKER_PASSWORD\" | docker login -u \"$DOCKER_USERNAME\" --password-stdin"
                     }
-                    // Push the Docker image to the registry
                     echo "Pushing Docker image to registry..."
                     sh "docker push ${DOCKER_IMAGE}"
                 }
@@ -54,9 +49,7 @@ pipeline {
         }
 
         stage('Deploy (Manual Trigger)') {
-            when {
-                expression { env.BRANCH_NAME == 'main' }
-            }
+            // This stage will now run every time, without a conditional.
             steps {
                 input message: 'Proceed with deployment to your RHEL 9 machine?', ok: 'Deploy'
                 script {
